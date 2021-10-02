@@ -651,12 +651,12 @@ set_color_of_char ; FUNC_PARAM1 = x, FUNC_PARAM2 = y, FUNC_PARAM3 = color
   bne .charNotFound
   ; if char found check if color matches
   +ldb VICSCREEN_COLOR_OFFSET
-  jsr inc_pointer2_16bit
+  jsr inc_pointer2_regB
   lda (SCREEN_POINTER),y ; color is now in accu
   and #$0f  ; vic colorram only uses the low nibble, high nibble is random
   cmp #vColor
   beq .posFound
-  jsr dec_pointer2_16bit ; back to screen ram
+  jsr dec_pointer2_regB ; back to screen ram
 .charNotFound
   iny
   cpy #SCREEN_WIDTH
@@ -695,12 +695,12 @@ set_color_of_char ; FUNC_PARAM1 = x, FUNC_PARAM2 = y, FUNC_PARAM3 = color
   bne .continue
   ; if char found check if color matches
   +ldb VICSCREEN_COLOR_OFFSET
-  jsr inc_pointer2_16bit
+  jsr inc_pointer2_regB
   lda (SCREEN_POINTER),y ; color is now in accu
   and #$0f  ; vic colorram only uses the low nibble, high nibble is random
   cmp #vCharColor
   beq .posFound
-  jsr dec_pointer2_16bit ; back to screen ram
+  jsr dec_pointer2_regB ; back to screen ram
   jmp .continue
 .posFound
   ; char found repaint it
@@ -710,7 +710,7 @@ set_color_of_char ; FUNC_PARAM1 = x, FUNC_PARAM2 = y, FUNC_PARAM3 = color
   ; of the current char
   lda aColor ; now we are at the color ram
   sta (SCREEN_POINTER),y
-  jsr dec_pointer2_16bit ; back to screen ram
+  jsr dec_pointer2_regB ; back to screen ram
 .continue
   iny
   cpy #SCREEN_WIDTH
@@ -737,10 +737,10 @@ set_color_of_char ; FUNC_PARAM1 = x, FUNC_PARAM2 = y, FUNC_PARAM3 = color
   ; add the difference of the screen and color ram, to jump to the color position
   ; of the current char
   +ldb VICSCREEN_COLOR_OFFSET
-  jsr inc_pointer2_16bit
+  jsr inc_pointer2_regB
   lda #vColor ; now we are at the color ram
   sta (SCREEN_POINTER),y
-  jsr dec_pointer2_16bit ; back to screen ram
+  jsr dec_pointer2_regB ; back to screen ram
 .continue
   iny
   cpy #SCREEN_WIDTH
@@ -766,26 +766,31 @@ loop_screen_chars ; calls the given method at FUNC_PARAM_1/2 for every char/colo
   lda (SCREEN_POINTER),y    ; y is actually col = x coord
   sta REGISTER_16_C ; store the char in regC
   ; offset to color ram
-  +ldb VICSCREEN_COLOR_OFFSET
-  jsr inc_pointer2_16bit
+  +inc_pointer2_16V VICSCREEN_COLOR_OFFSET
   lda (SCREEN_POINTER),y ; color is now in accu
   sta REGISTER_16_C+1 ; store color in regC
   ; call the given function (adress)
+  +push_pointer2
   +jsr_P FUNC_PARAM_1
+  +pop_pointer2
   
-  jsr dec_pointer2_16bit ; back to screen ram
+  +dec_pointer2_16V VICSCREEN_COLOR_OFFSET ; back to screen ram
 .continue
   inc FUNC_X
   lda FUNC_X
   cmp #SCREEN_WIDTH
-  bne .loop
+  beq .breakInnerLoop
+  jmp .loop
+.breakInnerLoop
   inc FUNC_Y
   jsr screenpointer_add_row
   lda #0
   sta FUNC_X
   lda FUNC_Y
   cmp #SCREEN_HEIGHT
-  bne .loop
+  beq .breakLoop
+  jmp .loop
+.breakLoop
   +pop_func_xy
   +pop_ay
   rts

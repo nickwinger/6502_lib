@@ -15,7 +15,7 @@ copy_mem                 ; copy the memory from location stored at pointer, to l
   sta REGISTER_16_C+1
   
   jsr inc_pointer_16bit
-  jsr inc_pointer2_16bit
+  jsr inc_pointer2_regB
   
   tya
   pha

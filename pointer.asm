@@ -267,8 +267,40 @@ dec_pointer_16bit    ; decrease pointer by a 16bit value defined by register b
   sta POINTER+1
   pla
   rts
+
+!macro inc_pointer2_16A aValue
+  +push_func_params_12
+  lda aValue
+  sta FUNC_PARAM_1
+  lda aValue + 1
+  sta FUNC_PARAM_2
+  jsr inc_pointer2_regB
+  +pop_func_params_12
+!end
+
+!macro inc_pointer2_16V vValue
+  +push_func_params_12
+  lda #<vValue
+  sta FUNC_PARAM_1
+  lda #>vValue
+  sta FUNC_PARAM_2
+  jsr inc_pointer2_16bit
+  +pop_func_params_12
+!end
   
-inc_pointer2_16bit    ; increase pointer2 by a 16bit value defined by register b
+inc_pointer2_16bit    ; increase pointer2 by a 16bit value defined by FUNC_PARAM_1/2
+  pha
+  clc
+  lda POINTER2
+  adc FUNC_PARAM_1
+  sta POINTER2
+  lda POINTER2+1
+  adc FUNC_PARAM_2
+  sta POINTER2+1
+  pla
+  rts
+  
+inc_pointer2_regB    ; increase pointer2 by a 16bit value defined by register b
   pha
   clc
   lda POINTER2
@@ -280,7 +312,29 @@ inc_pointer2_16bit    ; increase pointer2 by a 16bit value defined by register b
   pla
   rts
 
-dec_pointer2_16bit    ; decrease pointer2 by a 16bit value defined by register b
+!macro dec_pointer2_16V vValue
+  +push_func_params_12
+  lda #<vValue
+  sta FUNC_PARAM_1
+  lda #>vValue
+  sta FUNC_PARAM_2
+  jsr dec_pointer2_16bit
+  +pop_func_params_12
+!end
+
+dec_pointer2_16bit    ; decrease pointer2 by a 16bit value defined by FUNC_PARAM_1/2
+  pha
+  sec
+  lda POINTER2
+  sbc FUNC_PARAM_1
+  sta POINTER2
+  lda POINTER2+1
+  sbc FUNC_PARAM_2
+  sta POINTER2+1
+  pla
+  rts
+  
+dec_pointer2_regB    ; decrease pointer2 by a 16bit value defined by register b
   pha
   sec
   lda POINTER2

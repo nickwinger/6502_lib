@@ -17,8 +17,8 @@ RND_OG         = 7+1
 getRandom
  jsr rndBASIC
  jsr rndRaster
- jsr rndSID
- jsr rndTIMER
+ ;jsr rndSID
+ ;jsr rndTIMER
  ;eor rndSeed                        ;für eine bessere Streuung, diese
  ;sta rndSeed                        ;beiden Zeilen einkommentieren
  rts                                ;zurück
@@ -35,7 +35,7 @@ getRandom_Range
 !zone getRandom_VV_returnAccu
 !macro getRandom_VV_returnAccu vMin, vMax
 .start
- jsr getRandom                      ;Zufallszahl holen
+  jsr getRandom                     ;Zufallszahl holen
  cmp #vMax-vMin                 ;prüfen ob im gewünschten Bereich
  bcs .start                ;wenn nicht, neue Zufallszahl
  adc #vMin                        ;untere Grenze addieren
