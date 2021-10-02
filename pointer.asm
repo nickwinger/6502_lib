@@ -34,6 +34,15 @@ POINTER2 = $fb ; 16bit
   pla
 !end
 
+!macro set_pointer2_P pAdr    ; point pointer2 to adress where another pointer points to
+  pha
+  lda pAdr
+  sta POINTER2
+  lda pAdr+1
+  sta POINTER2+1
+  pla
+!end
+
 !macro set_pointer2 adr    ; point pointer2 to adress
   pha
   lda #<adr
