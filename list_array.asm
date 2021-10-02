@@ -323,6 +323,7 @@ NULL_P_ITEM
 !end
 
 !macro set_pItem_PAregY pPList, aPItem ; index is given in word-length in regY
+  +push_func_params_12345
   lda pPList
   sta FUNC_PARAM_4
   lda pPList+1
@@ -333,6 +334,7 @@ NULL_P_ITEM
   sta FUNC_PARAM_2
   sty FUNC_PARAM_3
   jsr set_pItem_index_pPList
+  +pop_func_params_12345
 !end
 
 set_pItem_index_pPList ; FUNC_PARAM_1/2 = aPItem, FUNC_PARAM_3 = (word)index, FUNC_PARAM_4/5 = pPList

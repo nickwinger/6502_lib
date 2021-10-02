@@ -38,6 +38,28 @@
   pla
 !end
 
+!macro push_func_xy
+  sta FUNC_pop_push_STACK_A
+  
+  lda FUNC_X
+  pha
+  lda FUNC_Y
+  pha
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro pop_func_xy
+  sta FUNC_pop_push_STACK_A
+  
+  pla
+  sta FUNC_X
+  pla
+  sta FUNC_Y
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
 !macro pop_func_params
   sta FUNC_pop_push_STACK_A
   
@@ -49,6 +71,71 @@
   sta FUNC_PARAM_7
   pla
   sta FUNC_PARAM_6
+  pla
+  sta FUNC_PARAM_5
+  pla
+  sta FUNC_PARAM_4
+  pla
+  sta FUNC_PARAM_3
+  pla
+  sta FUNC_PARAM_2
+  pla
+  sta FUNC_PARAM_1
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro pop_func_params_1
+  sta FUNC_pop_push_STACK_A
+  
+  pla
+  sta FUNC_PARAM_1
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro pop_func_params_12
+  sta FUNC_pop_push_STACK_A
+  
+  pla
+  sta FUNC_PARAM_2
+  pla
+  sta FUNC_PARAM_1
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro pop_func_params_123
+  sta FUNC_pop_push_STACK_A
+  
+  pla
+  sta FUNC_PARAM_3
+  pla
+  sta FUNC_PARAM_2
+  pla
+  sta FUNC_PARAM_1
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro pop_func_params_1234
+  sta FUNC_pop_push_STACK_A
+  
+  pla
+  sta FUNC_PARAM_4
+  pla
+  sta FUNC_PARAM_3
+  pla
+  sta FUNC_PARAM_2
+  pla
+  sta FUNC_PARAM_1
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro pop_func_params_12345
+  sta FUNC_pop_push_STACK_A
+  
   pla
   sta FUNC_PARAM_5
   pla
@@ -83,6 +170,71 @@
   lda FUNC_PARAM_8
   pha
   lda FUNC_PARAM_9
+  pha
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro push_func_params_1
+  sta FUNC_pop_push_STACK_A
+  
+  lda FUNC_PARAM_1
+  pha
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro push_func_params_12
+  sta FUNC_pop_push_STACK_A
+  
+  lda FUNC_PARAM_1
+  pha
+  lda FUNC_PARAM_2
+  pha
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro push_func_params_123
+  sta FUNC_pop_push_STACK_A
+  
+  lda FUNC_PARAM_1
+  pha
+  lda FUNC_PARAM_2
+  pha
+  lda FUNC_PARAM_3
+  pha
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro push_func_params_1234
+  sta FUNC_pop_push_STACK_A
+  
+  lda FUNC_PARAM_1
+  pha
+  lda FUNC_PARAM_2
+  pha
+  lda FUNC_PARAM_3
+  pha
+  lda FUNC_PARAM_4
+  pha
+  
+  lda FUNC_pop_push_STACK_A
+!end
+
+!macro push_func_params_12345
+  sta FUNC_pop_push_STACK_A
+  
+  lda FUNC_PARAM_1
+  pha
+  lda FUNC_PARAM_2
+  pha
+  lda FUNC_PARAM_3
+  pha
+  lda FUNC_PARAM_4
+  pha
+  lda FUNC_PARAM_5
   pha
   
   lda FUNC_pop_push_STACK_A

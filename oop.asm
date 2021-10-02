@@ -87,6 +87,8 @@ obj_definition_call_func ; calls the function at index FUNC_PARAM_3 of the defin
   rts
 
 !macro create_obj_VAV vObjType, aFuncJumpTable, vObjPropertiesSize ; reserves memory for the obj definition and returns it's adress at OOP_CONSTRUCTOR_RETURN
+  +push_func_params_1234
+  pha
   lda #vObjType
   sta FUNC_PARAM_1
   lda #<aFuncJumpTable
@@ -95,19 +97,23 @@ obj_definition_call_func ; calls the function at index FUNC_PARAM_3 of the defin
   sta FUNC_PARAM_3
   lda #vObjPropertiesSize
   sta FUNC_PARAM_4
+  pla
   jsr create_obj_definition
+  nop
+  +pop_func_params_1234
+  nop
 !end
 
 create_obj_definition ; FUNC_PARAM_1 = vObjType, FUNC_PARAM_2/3 = aFuncJumpTable, FUNC_PARAM_4 = vObjPropertiesSize ; reserves memory for the obj definition and returns it's adress at OOP_CONSTRUCTOR_RETURN
-  +push_func_params
   +malloc_V_return_pRegBCarry OBJ_DEFINITION_SIZE   ; 1. reserve memory for the definition
   +mov_16A16A REGISTER_16_B, OOP_CONSTRUCTOR_RETURN 
-  +pop_func_params
+  nop
   +set_properties_ramAdr_P OOP_CONSTRUCTOR_RETURN     ; 2. set properties of the definition
   +st_property_VA OBJ_DEFINITION_TYPE, FUNC_PARAM_1
   +st_property_VA OBJ_DEFINITION_FUNCS_JUMPTABLE_LO, FUNC_PARAM_2
   +st_property_VA OBJ_DEFINITION_FUNCS_JUMPTABLE_HI, FUNC_PARAM_3
-  +malloc_V_return_pRegBCarry FUNC_PARAM_4
+  nop
+  +malloc_A_return_pRegBCarry FUNC_PARAM_4
   +st_property_VP OBJ_DEFINITION_PROPERTIES, REGISTER_16_B
   rts
   

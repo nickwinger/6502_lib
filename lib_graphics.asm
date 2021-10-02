@@ -1,6 +1,8 @@
 !ifndef GRAPHICS {
   GRAPHICS = 1
 
+  jmp eof_lib_graphics
+  
 COLOR_BLACK         = $00          ;schwarz
 COLOR_WHITE         = $01          ;weiß
 COLOR_RED           = $02          ;rot
@@ -18,6 +20,21 @@ COLOR_LIGHTGREEN    = $0d          ;hellgrün
 COLOR_LIGHTBLUE     = $0e          ;hellblau
 COLOR_LIGHTGREY     = $0f          ;hellgrau
 
+COLOR_FADE_IN_TABLE_LENGTH
+!byte 5
+COLOR_FADE_IN_TABLE
+!byte COLOR_BLACK, COLOR_DARKGREY, COLOR_GREY, COLOR_LIGHTGREY, COLOR_WHITE
+
+COLOR_FLICKER_TABLE_LENGTH
+!byte 8
+COLOR_FLICKER_TABLE
+!byte COLOR_BLACK, COLOR_DARKGREY, COLOR_GREY, COLOR_LIGHTGREY, COLOR_WHITE, COLOR_LIGHTGREY, COLOR_GREY, COLOR_DARKGREY
+
+COLOR_FADE_OUT_TABLE_LENGTH
+!byte 5
+COLOR_FADE_OUT_TABLE
+!byte COLOR_WHITE, COLOR_LIGHTGREY, COLOR_GREY, COLOR_DARKGREY, COLOR_BLACK
+
 VICBASE             = $d000        ;(RG) = Register-Nr. dezimal
 VICSPRITES          = VICBASE
 VICBORDERCOLOR      = $d020        ;(32) Bildschirmrandfarbe
@@ -27,8 +44,6 @@ VICSCREENRAM        = $0400
 SCREENRAM           = VICSCREENRAM
 COLORRAM            = VICCOLORRAM
 VICSCREEN_COLOR_OFFSET = VICCOLORRAM - VICSCREENRAM
-
-jmp eof_lib_graphics
 
 
 ScreenRAMRowStartLow ;  SCREENRAM + 40*0, 40*1, 40*2 ... 40*24
@@ -583,6 +598,16 @@ get_color_of_char ; char position is in x/y register, return color is in accu
   lda (SCREEN_POINTER),y
   rts
   
+set_color_of_char ; FUNC_PARAM1 = x, FUNC_PARAM2 = y, FUNC_PARAM3 = color
+  +push_ay
+  ldy FUNC_PARAM_2
+  jsr set_colorpointer_row
+  ldy FUNC_PARAM_1
+  lda FUNC_PARAM_3
+  sta (SCREEN_POINTER),y
+  +pop_ay
+  rts
+
 !zone find_first_char
 !macro find_first_char_V vChar ; gets the first appearance of char (register a) on the screen, 
   ;position is in the x/y register (changed x = yCoord/row, y = xCoord/col)
@@ -726,6 +751,47 @@ get_color_of_char ; char position is in x/y register, return color is in accu
   cpx #SCREEN_HEIGHT
   bne .loop
 !end
+
+
+
+loop_screen_chars ; calls the given method at FUNC_PARAM_1/2 for every char/color, char/color is passed in regC
+  +push_ay
+  +push_func_xy
+  lda #0
+  sta FUNC_X
+  sta FUNC_Y
+  jsr init_screenpointer
+.loop
+  ldy FUNC_X
+  lda (SCREEN_POINTER),y    ; y is actually col = x coord
+  sta REGISTER_16_C ; store the char in regC
+  ; offset to color ram
+  +ldb VICSCREEN_COLOR_OFFSET
+  jsr inc_pointer2_16bit
+  lda (SCREEN_POINTER),y ; color is now in accu
+  sta REGISTER_16_C+1 ; store color in regC
+  ; call the given function (adress)
+  +jsr_P FUNC_PARAM_1
+  
+  jsr dec_pointer2_16bit ; back to screen ram
+.continue
+  inc FUNC_X
+  lda FUNC_X
+  cmp #SCREEN_WIDTH
+  bne .loop
+  inc FUNC_Y
+  jsr screenpointer_add_row
+  lda #0
+  sta FUNC_X
+  lda FUNC_Y
+  cmp #SCREEN_HEIGHT
+  bne .loop
+  +pop_func_xy
+  +pop_ay
+  rts
+
+
+
   
 !macro set_background_color_V vColor
   lda #vColor

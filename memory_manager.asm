@@ -22,10 +22,32 @@ jmp eof_memory_manager
 !zone malloc_V_return_pRegBCarry ; reserves memory and returns the pointer to it
   ; exceeding the reservable memory, sets the carry to 0 (false)
 !macro malloc_V_return_pRegBCarry vSize
+  +push_func_params_12
   pha
   lda #<vSize
   sta FUNC_PARAM_1
   lda #>vSize
+  sta FUNC_PARAM_2
+  +malloc_return_pRegBCarry
+  pla
+  +pop_func_params_12
+!end
+
+!macro malloc_16A_return_pRegBCarry aSize
+  pha
+  lda aSize
+  sta FUNC_PARAM_1
+  lda aSize + 1
+  sta FUNC_PARAM_2
+  +malloc_return_pRegBCarry
+  pla
+!end
+
+!macro malloc_A_return_pRegBCarry aSize
+  pha
+  lda aSize
+  sta FUNC_PARAM_1
+  lda #0
   sta FUNC_PARAM_2
   +malloc_return_pRegBCarry
   pla
