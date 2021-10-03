@@ -16,7 +16,7 @@ RND_OG         = 7+1
 ;*** gewünschte Zufallsfunktion wählen
 getRandom
  jsr rndBASIC
- jsr rndRaster
+ ;jsr rndRaster
  ;jsr rndSID
  ;jsr rndTIMER
  ;eor rndSeed                        ;für eine bessere Streuung, diese

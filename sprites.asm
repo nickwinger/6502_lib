@@ -97,15 +97,39 @@ set_sprite_data_PrmRegBRegX
   jsr set_sprite_data_PrmRegBRegX
 !end
 
-
 !zone set_sprite_color_VV
 !macro set_sprite_color_VV vSpriteNo, vColor
-  +push_ay
-  ldy #vSpriteNo
+  +push_func_params_12
+  pha
+  lda #vSpriteNo
+  sta FUNC_PARAM_1
   lda #vColor
+  sta FUNC_PARAM_2
+  pla
+  jsr set_sprite_color
+  +pop_func_params_12
+!end
+
+!zone set_sprite_color_AV
+!macro set_sprite_color_AV aSpriteNo, vColor
+  +push_func_params_12
+  pha
+  lda aSpriteNo
+  sta FUNC_PARAM_1
+  lda #vColor
+  sta FUNC_PARAM_2
+  pla
+  jsr set_sprite_color
+  +pop_func_params_12
+!end
+
+set_sprite_color ; FUNC_PARAM_1 = SpriteNo, FUNC_PARAM_2 0 Color
+  +push_ay
+  ldy FUNC_PARAM_1
+  lda FUNC_PARAM_2
   sta $D027, y
   +pop_ay
-!end
+  rts
 
 !zone set_sprite_pos_VVV
 !macro set_sprite_pos_VVV vSpriteNo, vSpriteX, vSpriteY

@@ -135,6 +135,7 @@ ColorRAMRowStartHigh ;  COLORRAM + 40*0, 40*1, 40*2 ... 40*24
 !end
 
 !macro drawChar_VAAA vChar, aColor, aCol, aRow
+  +push_ay
   ; set char
   ldy aRow
   jsr set_screenpointer_row
@@ -148,6 +149,7 @@ ColorRAMRowStartHigh ;  COLORRAM + 40*0, 40*1, 40*2 ... 40*24
   ldy aCol
   lda aColor
   sta (SCREEN_POINTER),Y
+  +pop_ay
 !end
 
 !macro drawChar_VVVV vChar, vColor, vCol, vRow
@@ -795,7 +797,36 @@ loop_screen_chars ; calls the given method at FUNC_PARAM_1/2 for every char/colo
   +pop_ay
   rts
 
+!macro cmp_char_color_AAVV aChar, aColor, vChar, vColor
+  +push_func_params_1234
+  lda aChar
+  sta FUNC_PARAM_1
+  lda aColor
+  sta FUNC_PARAM_2
+  lda #vChar
+  sta FUNC_PARAM_3
+  lda #vColor
+  sta FUNC_PARAM_4
+  jsr cmp_char_color
+  +pop_func_params_1234
+!end
 
+!zone cmp_char_color
+cmp_char_color ; compares the char FUNC_PARAM_1 with FUNC_PARAM_3 and the color FUNC_PARAM_2 with FUNC_PARAM_4 if equal
+  pha
+  lda FUNC_PARAM_1
+  cmp FUNC_PARAM_3
+  bne .notEqual
+  lda FUNC_PARAM_2
+  cmp FUNC_PARAM_4
+  bne .notEqual
+  sec
+  jmp .end
+.notEqual
+  clc
+.end
+  pla
+  rts
 
   
 !macro set_background_color_V vColor
